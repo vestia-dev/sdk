@@ -3,5 +3,12 @@
   "version": "0.0.1",
   "description": "The home for you devtools",
   "author": "mattkinnersley",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "build": "pnpm -r build",
+    "release": "pnpm --filter \"./packages/**\" publish"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.3"
+  }
 }
