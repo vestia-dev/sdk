@@ -1,0 +1,19 @@
+{
+  "name": "@vestia/api",
+  "version": "0.0.1",
+  "description": "The SDK for the Vestia API",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsup index.ts --format cjs,esm --dts",
+    "typecheck": "tsc --noEmit",
+    "release": "pnpm build && pnpm publish"
+  },
+  "devDependencies": {
+    "tsup": "^6.7.0",
+    "typescript": "^4.9.5"
+  },
+  "author": "mattkinnersley",
+  "license": "MIT"
+}
