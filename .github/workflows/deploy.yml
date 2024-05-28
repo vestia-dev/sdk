@@ -39,4 +39,4 @@ jobs:
 
       - name: sst deploy
         run: |
-          npm i && sst deploy --stage=${{ github.ref == 'refs/heads/main' && 'production' || 'test' }}
+          sst deploy --stage=${{ github.ref == 'refs/heads/main' && 'production' || 'test' }}
