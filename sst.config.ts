@@ -16,7 +16,7 @@ export default $config({
         thumbprintLists: ["aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"],
         url: `https://token.actions.githubusercontent.com`,
       });
-      const organization = "vestia";
+      const organization = "vestia-dev";
       const repository = "sdk";
       const role = new aws.iam.Role("GithubRole", {
         name: `VestiaDocs-${$app.stage}-GithubRole`,
