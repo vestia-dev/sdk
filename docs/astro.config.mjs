@@ -7,10 +7,11 @@ export default defineConfig({
   site: "https://docs.vestia.dev",
   integrations: [
     starlight({
-      title: "My Docs",
+      title: "Vestia",
       logo: {
         light: "./src/assets/vestia-logo-light-mode.svg",
         dark: "./src/assets/vestia-logo-dark-mode.svg",
+        replacesTitle: true,
       },
       social: {
         "x.com": "https://twitter.com/vestia_dev",
@@ -21,17 +22,19 @@ export default defineConfig({
       },
       sidebar: [
         {
+          label: "Introduction",
+          link: "introduction",
+        },
+        {
           label: "Guides",
-          items: [
-            // Each item here is one entry in the navigation menu.
-            { label: "Example Guide", link: "/guides/example/" },
-          ],
+          autogenerate: { directory: "guides" },
         },
         {
           label: "Reference",
           autogenerate: { directory: "reference" },
         },
       ],
+      favicon: "./src/assets/favicon.ico",
     }),
   ],
   output: "server",

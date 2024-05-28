@@ -10,12 +10,12 @@ export default $config({
   },
   async run() {
     const isPersonalStage = $app.stage !== "production" && $app.stage !== "dev";
-    const oidc = new aws.iam.OpenIdConnectProvider("GithubOidc", {
-      clientIdLists: ["sts.amazonaws.com"],
-      thumbprintLists: ["aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"],
-      url: `https://token.actions.githubusercontent.com`,
-    });
     if (!isPersonalStage) {
+      const oidc = new aws.iam.OpenIdConnectProvider("GithubOidc", {
+        clientIdLists: ["sts.amazonaws.com"],
+        thumbprintLists: ["aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"],
+        url: `https://token.actions.githubusercontent.com`,
+      });
       const organization = "vestia";
       const repository = "sdk";
       const role = new aws.iam.Role("GithubRole", {
