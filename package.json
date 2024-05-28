@@ -9,6 +9,10 @@
     "release": "pnpm --filter \"./packages/**\" publish"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.27.3"
+    "@changesets/cli": "^2.27.3",
+    "@types/aws-lambda": "8.10.138"
+  },
+  "dependencies": {
+    "sst": "ion"
   }
 }
