@@ -1,0 +1,36 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - "*"
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: aws
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: us-east-1
+          role-to-assume: arn:aws:iam::${{ secrets.PROD_AWS_ACCOUNT_ID }}:role/VestiaDocs-${{ github.ref == 'refs/heads/main' && 'production' || 'test' }}-GithubRole
+          role-duration-seconds: 1200
+
+      - name: install sst
+        run: |
+          curl -fsSL https://ion.sst.dev/install | bash
+
+      - name: sst deploy
+        run: |
+          npm i && sst deploy --stage=${{ github.ref == 'refs/heads/main' && 'production' || 'test' }}

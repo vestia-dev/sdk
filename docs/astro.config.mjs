@@ -13,7 +13,11 @@ export default defineConfig({
         dark: "./src/assets/vestia-logo-dark-mode.svg",
       },
       social: {
-        github: "https://github.com/withastro/starlight",
+        "x.com": "https://twitter.com/vestia_dev",
+        github: "https://github.com/vestia-dev/sdk",
+      },
+      editLink: {
+        baseUrl: "https://github.com/vestia-dev/sdk/edit/main/docs",
       },
       sidebar: [
         {
