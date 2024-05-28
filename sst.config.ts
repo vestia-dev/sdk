@@ -19,7 +19,7 @@ export default $config({
       const organization = "vestia";
       const repository = "sdk";
       const role = new aws.iam.Role("GithubRole", {
-        name: `Docs-${$app.stage}-GithubRole`,
+        name: `VestiaDocs-${$app.stage}-GithubRole`,
         assumeRolePolicy: {
           Version: "2012-10-17",
           Statement: [
