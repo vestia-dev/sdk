@@ -24,7 +24,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-region: us-east-1
-          role-to-assume: arn:aws:iam::${{ secrets.PROD_AWS_ACCOUNT_ID }}:role/VestiaDocs-${{ github.ref == 'refs/heads/main' && 'production' || 'test' }}-GithubRole
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/VestiaDocs-${{ github.ref == 'refs/heads/main' && 'production' || 'test' }}-GithubRole
           role-duration-seconds: 1200
 
       - name: install sst
