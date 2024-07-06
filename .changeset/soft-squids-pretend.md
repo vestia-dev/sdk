@@ -1,5 +1,0 @@
----
-"@vestia/api": patch
----
-
-Something
