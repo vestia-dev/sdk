@@ -4,9 +4,12 @@
   "description": "The home for you devtools",
   "author": "mattkinnersley",
   "license": "MIT",
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
-    "build": "pnpm -r build",
-    "release": "pnpm --filter \"./packages/**\" publish"
+    "build": "npm run build --workspaces",
+    "release": "npm publish --workspace=packages"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.3",
