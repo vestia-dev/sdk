@@ -2,4 +2,4 @@
 "@vestia/api": patch
 ---
 
-Something
+0.0.2
