@@ -1,15 +1,23 @@
+import { StudioAppType, ResourceAppType } from '@vestia/functions/api';
+import { Hono } from 'hono';
+import { hc } from 'hono/client';
+
 type Key = string;
 type GetToken = () => string | undefined;
-declare class APIClient {
-    protected key?: Key;
-    protected getToken: GetToken;
+type HonoApp = Hono<any, any, any>;
+type HonoClient<T extends HonoApp> = ReturnType<typeof hc<T>>;
+declare class APIClient<T extends HonoApp> {
     protected apiEndpoint: string;
+    protected key?: Key;
+    protected getToken?: GetToken;
+    protected honoClient: HonoClient<T>;
     constructor({ key, getToken }: {
         key?: Key;
         getToken?: GetToken;
     });
-    private createHonoClient;
-    private request;
+    request<Fn extends (client: HonoClient<T>) => any>(fn: Fn): Promise<ReturnType<Awaited<ReturnType<Fn>>["json"]> | null>;
+}
+declare class StudioClient extends APIClient<StudioAppType> {
     getUser(): Promise<{
         orgs: {
             email: string;
@@ -250,5 +258,41 @@ declare class APIClient {
         success: boolean;
     } | null>;
 }
+declare class ResourceClient extends APIClient<ResourceAppType> {
+    getContent({ published }: {
+        published: boolean;
+    }): Promise<{
+        content: {
+            displayName: string;
+            createdAt: string;
+            updatedAt?: string | undefined;
+            orgId: string;
+            spaceId: string;
+            environmentId: string;
+            contentId: string;
+            componentOrder: string[];
+            published?: boolean | undefined;
+        }[];
+    } | null>;
+    getComponentsByContentId({ contentId, published, }: {
+        contentId: string;
+        published?: boolean;
+    }): Promise<{
+        components: {
+            displayName: string;
+            createdAt: string;
+            updatedAt?: string | undefined;
+            type: string;
+            orgId: string;
+            spaceId: string;
+            environmentId: string;
+            contentId: string;
+            componentId: string;
+            controls: {
+                [x: string]: any;
+            };
+        }[];
+    } | null>;
+}
 
-export { APIClient };
+export { ResourceClient, StudioClient };

@@ -257,34 +257,42 @@ var hc = (baseUrl, options) => createProxy(function proxyCallback(opts) {
 
 // app/client/index.ts
 var APIClient = class {
+  apiEndpoint;
   key;
   getToken;
-  apiEndpoint;
+  honoClient;
   constructor({ key, getToken }) {
     this.key = key;
     this.apiEndpoint = import.meta.env.VITE_API_URL;
+    if (!this.key && !this.getToken) {
+      console.error(
+        "You must provide either a getToken function or an API Key"
+      );
+    }
     if (getToken) {
       this.getToken = getToken;
     } else {
       this.getToken = () => key;
     }
-  }
-  createHonoClient() {
     const headers = {};
+    if (!this.key && !this.getToken) {
+    }
     const jwt = this.key || this.getToken();
     if (jwt) {
       headers["authorization"] = jwt;
     }
-    return hc(this.apiEndpoint, { headers });
+    this.honoClient = hc(this.apiEndpoint, { headers });
   }
   async request(fn) {
-    const res = await fn(this.createHonoClient());
+    const res = await fn(this.honoClient);
     if (!res.ok) {
       console.error(res.statusText);
       return null;
     }
     return res.json();
   }
+};
+var StudioClient = class extends APIClient {
   async getUser() {
     return this.request((client) => client.user.$get());
   }
@@ -458,6 +466,31 @@ var APIClient = class {
     );
   }
 };
+var ResourceClient = class extends APIClient {
+  async getContent({ published }) {
+    return this.request(
+      (client) => client.content.$get({
+        query: published ? {
+          published: String(published)
+        } : void 0
+      })
+    );
+  }
+  async getComponentsByContentId({
+    contentId,
+    published = false
+  }) {
+    return this.request(
+      (client) => client.content[":contentId"].components.$get({
+        param: { contentId },
+        query: published ? {
+          published: String(published)
+        } : void 0
+      })
+    );
+  }
+};
 export {
-  APIClient
+  ResourceClient,
+  StudioClient
 };
