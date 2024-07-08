@@ -1,5 +1,12 @@
 # @vestia/api
 
+## 0.0.4
+
+### Patch Changes
+
+- f58f8a7: Bump
+- 02094cb: Copy api client
+
 ## 0.0.2
 
 ### Patch Changes
