@@ -5,7 +5,8 @@
   "author": "mattkinnersley",
   "license": "MIT",
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "docs"
   ],
   "scripts": {
     "build": "npm run build --workspaces",
