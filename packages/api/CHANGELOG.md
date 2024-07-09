@@ -1,5 +1,11 @@
 # @vestia/api
 
+## 0.0.6
+
+### Patch Changes
+
+- cad8755: Bump
+
 ## 0.0.5
 
 ### Patch Changes
