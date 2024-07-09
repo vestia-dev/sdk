@@ -1,5 +1,11 @@
 # @vestia/api
 
+## 0.0.9
+
+### Patch Changes
+
+- a10404a: Bump
+
 ## 0.0.8
 
 ### Patch Changes
