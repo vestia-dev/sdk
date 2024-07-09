@@ -11,7 +11,8 @@
   "scripts": {
     "build": "npm run build --workspaces",
     "export-api-client": "./get_api_client.sh",
-    "release": "npm publish --workspace=packages"
+    "release": "npm publish --workspace=packages",
+    "changeset": "changeset add"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.3",
