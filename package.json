@@ -10,6 +10,7 @@
   ],
   "scripts": {
     "build": "npm run build --workspaces",
+    "export-api-client": "./get_api_client.sh",
     "release": "npm publish --workspace=packages"
   },
   "devDependencies": {
