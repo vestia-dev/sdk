@@ -304,20 +304,8 @@ declare class StudioClient extends APIClient<StudioAppType> {
             updatedAt?: string | undefined;
             contentId: string;
             componentOrder: string[];
-            published?: boolean | undefined;
-        } | {
-            orgId: string;
-            spaceId: string;
-            environmentId: string;
-            displayName: string;
-            createdAt: string;
-            updatedAt?: string | undefined;
-            contentId: string;
-            componentOrder: string[];
             version: string;
-        };
-    } | {
-        content: {
+        }[] | {
             orgId: string;
             spaceId: string;
             environmentId: string;
