@@ -505,6 +505,128 @@ var StudioClient = class extends APIClient {
       { orgId, spaceId, environmentId }
     );
   }
+  async createContent({
+    orgId,
+    spaceId,
+    environmentId,
+    displayName,
+    contentId
+  }) {
+    return this.request(
+      (client, validOSEParams) => client.orgs[":orgId"].spaces[":spaceId"].environments[":environmentId"].content.$post({
+        param: { ...validOSEParams },
+        json: { displayName, contentId }
+      }),
+      { orgId, spaceId, environmentId }
+    );
+  }
+  async getContentByPrefix({
+    orgId,
+    spaceId,
+    environmentId,
+    prefix
+  }) {
+    return this.request(
+      (client, validOSEParams) => client.orgs[":orgId"].spaces[":spaceId"].environments[":environmentId"].content.$get({
+        param: { ...validOSEParams },
+        query: { prefix }
+      }),
+      { orgId, spaceId, environmentId }
+    );
+  }
+  async updateComponentOrder({
+    orgId,
+    spaceId,
+    environmentId,
+    contentId,
+    componentOrder
+  }) {
+    return this.request(
+      (client, validOSEParams) => client.orgs[":orgId"].spaces[":spaceId"].environments[":environmentId"].content[":contentId"].$put({
+        param: { ...validOSEParams, contentId },
+        json: { componentOrder }
+      }),
+      { orgId, spaceId, environmentId }
+    );
+  }
+  async publishContent({
+    orgId,
+    spaceId,
+    environmentId,
+    contentId
+  }) {
+    return this.request(
+      (client, validOSEParams) => client.orgs[":orgId"].spaces[":spaceId"].environments[":environmentId"].content.publish.$post({
+        param: { ...validOSEParams },
+        json: { contentId }
+      }),
+      { orgId, spaceId, environmentId }
+    );
+  }
+  async createComponent({
+    orgId,
+    spaceId,
+    environmentId,
+    contentId,
+    type,
+    displayName,
+    controls,
+    position
+  }) {
+    return this.request(
+      (client, validOSEParams) => client.orgs[":orgId"].spaces[":spaceId"].environments[":environmentId"].content[":contentId"].components.$post({
+        param: { ...validOSEParams, contentId },
+        json: { type, displayName, controls, position }
+      }),
+      { orgId, spaceId, environmentId }
+    );
+  }
+  async getComponentsByContentId({
+    orgId,
+    spaceId,
+    environmentId,
+    contentId
+  }) {
+    return this.request(
+      (client, validOSEParams) => client.orgs[":orgId"].spaces[":spaceId"].environments[":environmentId"].content[":contentId"].components.$get({
+        param: { ...validOSEParams, contentId }
+      }),
+      { orgId, spaceId, environmentId }
+    );
+  }
+  async updateComponent({
+    orgId,
+    spaceId,
+    environmentId,
+    contentId,
+    componentId,
+    displayName,
+    controls
+  }) {
+    return this.request(
+      (client, validOSEParams) => client.orgs[":orgId"].spaces[":spaceId"].environments[":environmentId"].content[":contentId"].components[":componentId"].$put({
+        param: { ...validOSEParams, contentId, componentId },
+        json: { displayName, controls }
+      }),
+      { orgId, spaceId, environmentId }
+    );
+  }
+  async removeComponent({
+    orgId,
+    spaceId,
+    environmentId,
+    contentId,
+    componentId,
+    componentOrder
+  }) {
+    return this.request(
+      (client, validOSEParams) => client.orgs[":orgId"].spaces[":spaceId"].environments[":environmentId"].content[":contentId"].components[":componentId"].$delete({
+        param: { ...validOSEParams, contentId, componentId },
+        json: { componentOrder }
+      }),
+      { orgId, spaceId, environmentId }
+    );
+  }
 };
 var ResourceClient = class extends APIClient {
   async getContent({ published }) {

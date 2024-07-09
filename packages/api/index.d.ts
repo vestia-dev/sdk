@@ -155,7 +155,7 @@ declare class StudioClient extends APIClient<StudioAppType> {
         }[];
     } | null>;
     getSpace({ orgId, spaceId }: {
-        orgId: string;
+        orgId?: string;
         spaceId: string;
     }): Promise<{
         space: {
@@ -183,7 +183,7 @@ declare class StudioClient extends APIClient<StudioAppType> {
         }[];
     } | null>;
     inviteUserToOrg({ orgId, email }: {
-        orgId: string;
+        orgId?: string;
         email: string;
     }): Promise<{
         invite: {
@@ -194,8 +194,8 @@ declare class StudioClient extends APIClient<StudioAppType> {
         };
     } | null>;
     createSpace({ orgId, spaceId, displayName, environments, }: {
-        orgId: string;
-        spaceId: string;
+        orgId?: string;
+        spaceId?: string;
         displayName: string;
         environments?: ("production" | "development")[];
     }): Promise<{
@@ -215,15 +215,15 @@ declare class StudioClient extends APIClient<StudioAppType> {
         }[];
     } | null>;
     removeSpace({ orgId, spaceId }: {
-        orgId: string;
+        orgId?: string;
         spaceId: string;
     }): Promise<{
         success: boolean;
     } | null>;
     createEnvironment({ orgId, spaceId, environmentId, }: {
-        orgId: string;
-        spaceId: string;
-        environmentId: string;
+        orgId?: string;
+        spaceId?: string;
+        environmentId?: string;
     }): Promise<{
         environment: {
             orgId: string;
@@ -234,14 +234,14 @@ declare class StudioClient extends APIClient<StudioAppType> {
         };
     } | null>;
     removeEnvironment({ orgId, spaceId, environmentId, }: {
-        orgId: string;
-        spaceId: string;
-        environmentId: string;
+        orgId?: string;
+        spaceId?: string;
+        environmentId?: string;
     }): Promise<{
         success: boolean;
     } | null>;
     getAPIKeys({ orgId, spaceId }: {
-        orgId: string;
+        orgId?: string;
         spaceId: string;
     }): Promise<{
         apiKeys: {
@@ -255,20 +255,217 @@ declare class StudioClient extends APIClient<StudioAppType> {
         }[];
     } | null>;
     createAPIKey({ orgId, spaceId, environmentId, displayName, }: {
-        orgId: string;
-        spaceId: string;
-        environmentId: string;
+        orgId?: string;
+        spaceId?: string;
+        environmentId?: string;
         displayName: string;
     }): Promise<{
         token: string;
     } | null>;
     removeAPIKey({ orgId, spaceId, environmentId, keyId, }: {
-        orgId: string;
-        spaceId: string;
-        environmentId: string;
+        orgId?: string;
+        spaceId?: string;
+        environmentId?: string;
         keyId: string;
     }): Promise<{
         success: boolean;
+    } | null>;
+    createContent({ orgId, spaceId, environmentId, displayName, contentId, }: {
+        orgId?: string;
+        spaceId?: string;
+        environmentId?: string;
+        displayName: string;
+        contentId: string;
+    }): Promise<{
+        content: {
+            orgId: string;
+            spaceId: string;
+            environmentId: string;
+            displayName: string;
+            createdAt: string;
+            updatedAt?: string | undefined;
+            contentId: string;
+            componentOrder: string[];
+            published?: boolean | undefined;
+        };
+    } | null>;
+    getContentByPrefix({ orgId, spaceId, environmentId, prefix, }: {
+        orgId?: string;
+        spaceId?: string;
+        environmentId?: string;
+        prefix: string;
+    }): Promise<{
+        content: {
+            orgId: string;
+            spaceId: string;
+            environmentId: string;
+            displayName: string;
+            createdAt: string;
+            updatedAt?: string | undefined;
+            contentId: string;
+            componentOrder: string[];
+            published?: boolean | undefined;
+        } | {
+            orgId: string;
+            spaceId: string;
+            environmentId: string;
+            displayName: string;
+            createdAt: string;
+            updatedAt?: string | undefined;
+            contentId: string;
+            componentOrder: string[];
+            version: string;
+        };
+    } | {
+        content: {
+            orgId: string;
+            spaceId: string;
+            environmentId: string;
+            displayName: string;
+            createdAt: string;
+            updatedAt?: string | undefined;
+            contentId: string;
+            componentOrder: string[];
+            published?: boolean | undefined;
+        }[];
+    } | null>;
+    updateComponentOrder({ orgId, spaceId, environmentId, contentId, componentOrder, }: {
+        orgId?: string;
+        spaceId?: string;
+        environmentId?: string;
+        contentId: string;
+        componentOrder: string[];
+    }): Promise<{
+        content: {
+            orgId?: string | undefined;
+            spaceId?: string | undefined;
+            environmentId?: string | undefined;
+            displayName?: string | undefined;
+            createdAt?: string | undefined;
+            updatedAt?: string | undefined;
+            contentId?: string | undefined;
+            componentOrder?: string[] | undefined;
+            published?: boolean | undefined;
+        };
+    } | null>;
+    publishContent({ orgId, spaceId, environmentId, contentId, }: {
+        orgId?: string;
+        spaceId?: string;
+        environmentId?: string;
+        contentId: string;
+    }): Promise<{
+        content: {
+            orgId: string;
+            spaceId: string;
+            environmentId: string;
+            displayName: string;
+            createdAt: string;
+            updatedAt?: string | undefined;
+            contentId: string;
+            componentOrder: string[];
+            version: string;
+        };
+    } | null>;
+    createComponent({ orgId, spaceId, environmentId, contentId, type, displayName, controls, position, }: {
+        orgId?: string;
+        spaceId?: string;
+        environmentId?: string;
+        contentId: string;
+        type: string;
+        displayName: string;
+        controls: Record<string, any>;
+        position: number | "end";
+    }): Promise<{
+        component: {
+            orgId: string;
+            spaceId: string;
+            environmentId: string;
+            displayName: string;
+            createdAt: string;
+            updatedAt?: string | undefined;
+            type: string;
+            contentId: string;
+            componentId: string;
+            controls: {
+                [x: string]: any;
+            };
+        };
+        content: {
+            orgId?: string | undefined;
+            spaceId?: string | undefined;
+            environmentId?: string | undefined;
+            displayName?: string | undefined;
+            createdAt?: string | undefined;
+            updatedAt?: string | undefined;
+            contentId?: string | undefined;
+            componentOrder?: string[] | undefined;
+            published?: boolean | undefined;
+        };
+    } | null>;
+    getComponentsByContentId({ orgId, spaceId, environmentId, contentId, }: {
+        orgId?: string;
+        spaceId?: string;
+        environmentId?: string;
+        contentId: string;
+    }): Promise<{
+        components: {
+            orgId: string;
+            spaceId: string;
+            environmentId: string;
+            displayName: string;
+            createdAt: string;
+            updatedAt?: string | undefined;
+            type: string;
+            contentId: string;
+            componentId: string;
+            controls: {
+                [x: string]: any;
+            };
+        }[];
+    } | null>;
+    updateComponent({ orgId, spaceId, environmentId, contentId, componentId, displayName, controls, }: {
+        orgId?: string;
+        spaceId?: string;
+        environmentId?: string;
+        contentId: string;
+        componentId: string;
+        displayName: string;
+        controls: Record<string, any>;
+    }): Promise<{
+        component: {
+            orgId?: string | undefined;
+            spaceId?: string | undefined;
+            environmentId?: string | undefined;
+            displayName?: string | undefined;
+            createdAt?: string | undefined;
+            updatedAt?: string | undefined;
+            type?: string | undefined;
+            contentId?: string | undefined;
+            componentId?: string | undefined;
+            controls?: {
+                [x: string]: any;
+            } | undefined;
+        };
+    } | null>;
+    removeComponent({ orgId, spaceId, environmentId, contentId, componentId, componentOrder, }: {
+        orgId?: string;
+        spaceId?: string;
+        environmentId?: string;
+        contentId: string;
+        componentId: string;
+        componentOrder: string[];
+    }): Promise<{
+        content: {
+            orgId?: string | undefined;
+            spaceId?: string | undefined;
+            environmentId?: string | undefined;
+            displayName?: string | undefined;
+            createdAt?: string | undefined;
+            updatedAt?: string | undefined;
+            contentId?: string | undefined;
+            componentOrder?: string[] | undefined;
+            published?: boolean | undefined;
+        };
     } | null>;
 }
 declare class ResourceClient extends APIClient<ResourcesAppType> {
