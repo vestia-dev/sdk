@@ -258,33 +258,57 @@ var hc = (baseUrl, options) => createProxy(function proxyCallback(opts) {
 // app/client/index.ts
 var APIClient = class {
   apiEndpoint;
+  honoClient;
   key;
   getToken;
-  honoClient;
-  constructor({ key, getToken }) {
+  orgId;
+  spaceId;
+  environmentId;
+  constructor({
+    key,
+    getToken,
+    orgId,
+    spaceId,
+    environmentId
+  }) {
     this.key = key;
-    this.apiEndpoint = import.meta.env.VITE_API_URL;
-    if (!this.key && !this.getToken) {
-      console.error(
-        "You must provide either a getToken function or an API Key"
-      );
-    }
+    this.apiEndpoint = "https://api.vestia.dev/";
+    this.orgId = orgId;
+    this.spaceId = spaceId;
+    this.environmentId = environmentId;
     if (getToken) {
       this.getToken = getToken;
     } else {
       this.getToken = () => key;
     }
-    const headers = {};
     if (!this.key && !this.getToken) {
+      throw Error("You must provide either a getToken function or an API Key");
     }
+    const headers = {};
     const jwt = this.key || this.getToken();
     if (jwt) {
       headers["authorization"] = jwt;
     }
     this.honoClient = hc(this.apiEndpoint, { headers });
   }
-  async request(fn) {
-    const res = await fn(this.honoClient);
+  async request(fn, oseParams) {
+    let validOSEParams = {};
+    if (oseParams) {
+      Object.entries(oseParams).forEach(([key, value]) => {
+        if (key === "orgId" || key === "spaceId" || key === "environmentId") {
+          if (!value) {
+            if (!this[key]) {
+              throw Error(`Missing parameter: ${key} for query `);
+            } else {
+              validOSEParams = { ...validOSEParams, [key]: this[key] };
+            }
+          } else {
+            validOSEParams = { ...validOSEParams, [key]: value };
+          }
+        }
+      });
+    }
+    const res = await fn(this.honoClient, validOSEParams);
     if (!res.ok) {
       console.error(res.statusText);
       return null;
@@ -313,12 +337,13 @@ var StudioClient = class extends APIClient {
     accepted
   }) {
     return await this.request(
-      (client) => client.user.invites.$put({
+      (client, validOSEParams) => client.user.invites.$put({
         json: {
-          orgId,
-          accepted
+          accepted,
+          ...validOSEParams
         }
-      })
+      }),
+      { orgId }
     );
   }
   async createOrgWithUser({
@@ -327,20 +352,22 @@ var StudioClient = class extends APIClient {
     email
   }) {
     return this.request(
-      (client) => client.orgs.$post({
+      (client, validOSEParams) => client.orgs.$post({
         json: {
           displayName,
-          orgId,
-          email
+          email,
+          ...validOSEParams
         }
-      })
+      }),
+      { orgId }
     );
   }
   async getOrg({ orgId }) {
     return this.request(
-      (client) => client.orgs[":orgId"].$get({
-        param: { orgId }
-      })
+      (client, validOSEParams) => client.orgs[":orgId"].$get({
+        param: validOSEParams
+      }),
+      { orgId }
     );
   }
   async updateOrgDisplayName({
@@ -348,46 +375,52 @@ var StudioClient = class extends APIClient {
     orgId
   }) {
     return this.request(
-      (client) => client.orgs[":orgId"].$put({
-        param: { orgId },
+      (client, validOSEParams) => client.orgs[":orgId"].$put({
+        param: validOSEParams,
         json: { displayName }
-      })
+      }),
+      { orgId }
     );
   }
   async removeOrg({ orgId }) {
     return this.request(
-      (client) => client.orgs[":orgId"].$delete({
-        param: { orgId }
-      })
+      (client, validOSEParams) => client.orgs[":orgId"].$delete({
+        param: validOSEParams
+      }),
+      { orgId }
     );
   }
   async getOrgUsersAndInvites({ orgId }) {
     return this.request(
-      (client) => client.orgs[":orgId"].users.$get({
-        param: { orgId }
-      })
+      (client, validOSEParams) => client.orgs[":orgId"].users.$get({
+        param: validOSEParams
+      }),
+      { orgId }
     );
   }
   async getSpaces({ orgId }) {
     return this.request(
-      (client) => client.orgs[":orgId"].spaces.$get({
-        param: { orgId }
-      })
+      (client, validOSEParams) => client.orgs[":orgId"].spaces.$get({
+        param: validOSEParams
+      }),
+      { orgId }
     );
   }
   async getSpace({ orgId, spaceId }) {
     return this.request(
-      (client) => client.orgs[":orgId"].spaces[":spaceId"].$get({
-        param: { orgId, spaceId }
-      })
+      (client, validOSEParams) => client.orgs[":orgId"].spaces[":spaceId"].$get({
+        param: validOSEParams
+      }),
+      { orgId, spaceId }
     );
   }
   async inviteUserToOrg({ orgId, email }) {
     return this.request(
-      (client) => client.orgs[":orgId"].invites.$post({
-        param: { orgId },
+      (client, validOSEParams) => client.orgs[":orgId"].invites.$post({
+        param: validOSEParams,
         json: { email }
-      })
+      }),
+      { orgId }
     );
   }
   async createSpace({
@@ -397,17 +430,19 @@ var StudioClient = class extends APIClient {
     environments
   }) {
     return this.request(
-      (client) => client.orgs[":orgId"].spaces.$post({
-        param: { orgId },
-        json: { spaceId, displayName, environments }
-      })
+      (client, validOSEParams) => client.orgs[":orgId"].spaces.$post({
+        param: validOSEParams,
+        json: { ...validOSEParams, displayName, environments }
+      }),
+      { orgId, spaceId }
     );
   }
   async removeSpace({ orgId, spaceId }) {
     return this.request(
-      (client) => client.orgs[":orgId"].spaces[":spaceId"].$delete({
-        param: { orgId, spaceId }
-      })
+      (client, validOSEParams) => client.orgs[":orgId"].spaces[":spaceId"].$delete({
+        param: validOSEParams
+      }),
+      { orgId, spaceId }
     );
   }
   async createEnvironment({
@@ -416,10 +451,11 @@ var StudioClient = class extends APIClient {
     environmentId
   }) {
     return this.request(
-      (client) => client.orgs[":orgId"].spaces[":spaceId"].environments.$post({
-        param: { orgId, spaceId },
-        json: { environmentId }
-      })
+      (client, validOSEParams) => client.orgs[":orgId"].spaces[":spaceId"].environments.$post({
+        param: validOSEParams,
+        json: validOSEParams
+      }),
+      { orgId, spaceId, environmentId }
     );
   }
   async removeEnvironment({
@@ -428,16 +464,18 @@ var StudioClient = class extends APIClient {
     environmentId
   }) {
     return this.request(
-      (client) => client.orgs[":orgId"].spaces[":spaceId"].environments[":environmentId"].$delete({
-        param: { orgId, spaceId, environmentId }
-      })
+      (client, validOSEParams) => client.orgs[":orgId"].spaces[":spaceId"].environments[":environmentId"].$delete({
+        param: validOSEParams
+      }),
+      { orgId, spaceId, environmentId }
     );
   }
   async getAPIKeys({ orgId, spaceId }) {
     return this.request(
-      (client) => client.orgs[":orgId"].spaces[":spaceId"].keys.$get({
-        param: { orgId, spaceId }
-      })
+      (client, validOSEParams) => client.orgs[":orgId"].spaces[":spaceId"].keys.$get({
+        param: validOSEParams
+      }),
+      { orgId, spaceId }
     );
   }
   async createAPIKey({
@@ -447,10 +485,11 @@ var StudioClient = class extends APIClient {
     displayName
   }) {
     return this.request(
-      (client) => client.orgs[":orgId"].spaces[":spaceId"].environments[":environmentId"].keys.$post({
-        param: { orgId, spaceId, environmentId },
+      (client, validOSEParams) => client.orgs[":orgId"].spaces[":spaceId"].environments[":environmentId"].keys.$post({
+        param: validOSEParams,
         json: { displayName }
-      })
+      }),
+      { orgId, spaceId, environmentId }
     );
   }
   async removeAPIKey({
@@ -460,16 +499,17 @@ var StudioClient = class extends APIClient {
     keyId
   }) {
     return this.request(
-      (client) => client.orgs[":orgId"].spaces[":spaceId"].environments[":environmentId"].keys[":keyId"].$delete({
-        param: { orgId, spaceId, environmentId, keyId }
-      })
+      (client, validOSEParams) => client.orgs[":orgId"].spaces[":spaceId"].environments[":environmentId"].keys[":keyId"].$delete({
+        param: { keyId, ...validOSEParams }
+      }),
+      { orgId, spaceId, environmentId }
     );
   }
 };
 var ResourceClient = class extends APIClient {
   async getContent({ published }) {
     return this.request(
-      (client) => client.content.$get({
+      (client) => client.resources.content.$get({
         query: published ? {
           published: String(published)
         } : void 0
@@ -481,7 +521,7 @@ var ResourceClient = class extends APIClient {
     published = false
   }) {
     return this.request(
-      (client) => client.content[":contentId"].components.$get({
+      (client) => client.resources.content[":contentId"].components.$get({
         param: { contentId },
         query: published ? {
           published: String(published)

@@ -1,4 +1,4 @@
-import { StudioAppType, ResourceAppType } from '@vestia/functions/api';
+import { StudioAppType, ResourcesAppType } from '@vestia/functions/api';
 import { Hono } from 'hono';
 import { hc } from 'hono/client';
 
@@ -6,24 +6,37 @@ type Key = string;
 type GetToken = () => string | undefined;
 type HonoApp = Hono<any, any, any>;
 type HonoClient<T extends HonoApp> = ReturnType<typeof hc<T>>;
+type DeepNonNullable<T> = {
+    [K in keyof T]: DeepNonNullable<NonNullable<T[K]>>;
+};
 declare class APIClient<T extends HonoApp> {
     protected apiEndpoint: string;
+    protected honoClient: HonoClient<T>;
     protected key?: Key;
     protected getToken?: GetToken;
-    protected honoClient: HonoClient<T>;
-    constructor({ key, getToken }: {
+    protected orgId?: string;
+    protected spaceId?: string;
+    protected environmentId?: string;
+    constructor({ key, getToken, orgId, spaceId, environmentId, }: {
         key?: Key;
         getToken?: GetToken;
+        orgId?: string;
+        spaceId?: string;
+        environmentId?: string;
     });
-    request<Fn extends (client: HonoClient<T>) => any>(fn: Fn): Promise<ReturnType<Awaited<ReturnType<Fn>>["json"]> | null>;
+    request<P extends {
+        orgId?: string;
+        spaceId?: string;
+        environmentId?: string;
+    }, Fn extends (client: HonoClient<T>, validOSEParams: DeepNonNullable<P>) => any>(fn: Fn, oseParams?: P): Promise<ReturnType<Awaited<ReturnType<Fn>>["json"]> | null>;
 }
 declare class StudioClient extends APIClient<StudioAppType> {
     getUser(): Promise<{
         orgs: {
+            orgId: string;
             email: string;
             createdAt: string;
             updatedAt?: string | undefined;
-            orgId: string;
             role: string;
         }[];
         user: {
@@ -47,65 +60,65 @@ declare class StudioClient extends APIClient<StudioAppType> {
     } | null>;
     getUserInvites(): Promise<{
         invites: {
+            orgId: string;
             email: string;
             createdAt: string;
             updatedAt?: string | undefined;
-            orgId: string;
         }[];
     } | null>;
     handleInviteToOrg({ orgId, accepted, }: {
-        orgId: string;
+        orgId?: string;
         accepted: boolean;
     }): Promise<{
         orgUser: {
+            orgId: string;
             email: string;
             createdAt: string;
             updatedAt?: string | undefined;
-            orgId: string;
             role: string;
         } | null;
     } | null>;
     createOrgWithUser({ displayName, orgId, email, }: {
         displayName: string;
-        orgId: string;
+        orgId?: string;
         email: string;
     }): Promise<{
         org: {
+            orgId: string;
             displayName: string;
             pictureUrl?: string | undefined;
             createdAt: string;
             updatedAt?: string | undefined;
-            orgId: string;
         };
         orgUser: {
+            orgId: string;
             email: string;
             createdAt: string;
             updatedAt?: string | undefined;
-            orgId: string;
             role: string;
         };
     } | null>;
     getOrg({ orgId }: {
-        orgId: string;
+        orgId?: string;
     }): Promise<{
         org: {
+            orgId: string;
             displayName: string;
             pictureUrl?: string | undefined;
             createdAt: string;
             updatedAt?: string | undefined;
-            orgId: string;
         } | null;
     } | null>;
     updateOrgDisplayName({ displayName, orgId, }: {
         displayName: string;
-        orgId: string;
+        orgId?: string;
     }): Promise<{
         org: {
+            orgId?: string | undefined;
             displayName?: string | undefined;
             pictureUrl?: string | undefined;
             createdAt?: string | undefined;
             updatedAt?: string | undefined;
-            orgId?: string | undefined;
         };
     } | null>;
     removeOrg({ orgId }: {
@@ -117,28 +130,28 @@ declare class StudioClient extends APIClient<StudioAppType> {
         orgId: string;
     }): Promise<{
         orgUsers: {
+            orgId: string;
             email: string;
             createdAt: string;
             updatedAt?: string | undefined;
-            orgId: string;
             role: string;
         }[];
         invites: {
+            orgId: string;
             email: string;
             createdAt: string;
             updatedAt?: string | undefined;
-            orgId: string;
         }[];
     } | null>;
     getSpaces({ orgId }: {
         orgId: string;
     }): Promise<{
         spaces: {
+            orgId: string;
+            spaceId: string;
             displayName: string;
             createdAt: string;
             updatedAt?: string | undefined;
-            orgId: string;
-            spaceId: string;
         }[];
     } | null>;
     getSpace({ orgId, spaceId }: {
@@ -146,26 +159,26 @@ declare class StudioClient extends APIClient<StudioAppType> {
         spaceId: string;
     }): Promise<{
         space: {
+            orgId: string;
+            spaceId: string;
             displayName: string;
             createdAt: string;
             updatedAt?: string | undefined;
-            orgId: string;
-            spaceId: string;
         };
         environments: {
-            createdAt: string;
-            updatedAt?: string | undefined;
             orgId: string;
             spaceId: string;
             environmentId: string;
+            createdAt: string;
+            updatedAt?: string | undefined;
         }[];
         apiKeys: {
+            orgId: string;
+            spaceId: string;
+            environmentId: string;
             displayName: string;
             createdAt: string;
             updatedAt?: string | undefined;
-            orgId: string;
-            spaceId: string;
-            environmentId: string;
             keyId: string;
         }[];
     } | null>;
@@ -174,10 +187,10 @@ declare class StudioClient extends APIClient<StudioAppType> {
         email: string;
     }): Promise<{
         invite: {
+            orgId: string;
             email: string;
             createdAt: string;
             updatedAt?: string | undefined;
-            orgId: string;
         };
     } | null>;
     createSpace({ orgId, spaceId, displayName, environments, }: {
@@ -187,18 +200,18 @@ declare class StudioClient extends APIClient<StudioAppType> {
         environments?: ("production" | "development")[];
     }): Promise<{
         space: {
+            orgId: string;
+            spaceId: string;
             displayName: string;
             createdAt: string;
             updatedAt?: string | undefined;
-            orgId: string;
-            spaceId: string;
         };
         environments: {
-            createdAt: string;
-            updatedAt?: string | undefined;
             orgId: string;
             spaceId: string;
             environmentId: string;
+            createdAt: string;
+            updatedAt?: string | undefined;
         }[];
     } | null>;
     removeSpace({ orgId, spaceId }: {
@@ -213,11 +226,11 @@ declare class StudioClient extends APIClient<StudioAppType> {
         environmentId: string;
     }): Promise<{
         environment: {
-            createdAt: string;
-            updatedAt?: string | undefined;
             orgId: string;
             spaceId: string;
             environmentId: string;
+            createdAt: string;
+            updatedAt?: string | undefined;
         };
     } | null>;
     removeEnvironment({ orgId, spaceId, environmentId, }: {
@@ -232,12 +245,12 @@ declare class StudioClient extends APIClient<StudioAppType> {
         spaceId: string;
     }): Promise<{
         apiKeys: {
-            displayName: string;
-            createdAt: string;
-            updatedAt?: string | undefined;
             orgId: string;
             spaceId: string;
             environmentId: string;
+            displayName: string;
+            createdAt: string;
+            updatedAt?: string | undefined;
             keyId: string;
         }[];
     } | null>;
@@ -258,17 +271,17 @@ declare class StudioClient extends APIClient<StudioAppType> {
         success: boolean;
     } | null>;
 }
-declare class ResourceClient extends APIClient<ResourceAppType> {
+declare class ResourceClient extends APIClient<ResourcesAppType> {
     getContent({ published }: {
         published: boolean;
     }): Promise<{
         content: {
-            displayName: string;
-            createdAt: string;
-            updatedAt?: string | undefined;
             orgId: string;
             spaceId: string;
             environmentId: string;
+            displayName: string;
+            createdAt: string;
+            updatedAt?: string | undefined;
             contentId: string;
             componentOrder: string[];
             published?: boolean | undefined;
@@ -279,13 +292,13 @@ declare class ResourceClient extends APIClient<ResourceAppType> {
         published?: boolean;
     }): Promise<{
         components: {
+            orgId: string;
+            spaceId: string;
+            environmentId: string;
             displayName: string;
             createdAt: string;
             updatedAt?: string | undefined;
             type: string;
-            orgId: string;
-            spaceId: string;
-            environmentId: string;
             contentId: string;
             componentId: string;
             controls: {
