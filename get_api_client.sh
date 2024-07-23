@@ -3,7 +3,7 @@ set -e
 git pull
 cd ../vestia/packages/web
 npx tsup app/client/index.ts --dts --format esm --env.VITE_API_URL https://api.vestia.dev/
-mv -f dist/* ../../../sdk/packages/api
+mv -f dist/* ../../../sdk/packages/api/dist/
 cd ../../../sdk
 npx changeset
 git add .
