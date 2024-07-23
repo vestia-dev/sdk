@@ -1,6 +1,6 @@
 {
   "name": "@vestia/api",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "The SDK for the Vestia API",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
