@@ -1,0 +1,27 @@
+{
+  "name": "@vestia/react",
+  "version": "0.0.1",
+  "description": "The React SDK for Vestia",
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsup index.tsx --format esm",
+    "typecheck": "tsc --noEmit",
+    "release": "npm publish"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tsup": "^8.2.2",
+    "typescript": "^4.9.5"
+  },
+  "peerDependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "author": "mattkinnersley",
+  "license": "MIT"
+}
