@@ -18,10 +18,10 @@ To release a new version of packages, run the following command to create a chan
 npx changeset
 ```
 
-Then, commit and push:
+Then add, commit and push:
 
 ```bash
-git commit -m "Release" && git push
+git add . && git commit -m "Release" && git push
 ```
 
 Finally, merge the pull request created by the changeset bot to release to NPM. Note: not all changes require a changeset or a new version release.
