@@ -6,17 +6,37 @@
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./styles.css": "./dist/styles.css"
+  },
   "scripts": {
-    "build": "tsup index.tsx --format esm",
+    "build": "tsup index.tsx --dts --format esm --onSuccess \"panda cssgen --minify --outfile dist/styles.css\"",
+    "dev": "tsup index.tsx --watch --dts --format esm --onSuccess \"panda cssgen --minify --outfile dist/styles.css --watch\"",
     "typecheck": "tsc --noEmit",
-    "release": "npm publish"
+    "release": "npm publish",
+    "prepare": "panda codegen"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^3.9.0",
+    "@tanstack/react-query": "^5.51.21",
+    "bundle-require": "^5.0.0",
+    "esbuild": "^0.23.0",
+    "lucide-react": "^0.417.0",
+    "react-aria-components": "^1.3.1",
+    "react-hook-form": "^7.52.2",
+    "react-stately": "^3.32.2",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@pandacss/dev": "^0.44.0",
+    "@types/node": "^22.1.0",
     "@types/react": "^18.3.3",
+    "@vestia/api": "file:../api",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "tsup": "^8.2.2",
-    "typescript": "^4.9.5"
+    "typescript": "^5.5.4"
   },
   "peerDependencies": {
     "react": "^18.3.1",

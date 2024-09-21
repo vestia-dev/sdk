@@ -10,7 +10,7 @@
     "release": "npm publish"
   },
   "devDependencies": {
-    "typescript": "^4.9.5"
+    "typescript": "^5.5.4"
   },
   "author": "mattkinnersley",
   "license": "MIT"

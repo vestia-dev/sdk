@@ -9,6 +9,14 @@ type HonoClient<T extends HonoApp> = ReturnType<typeof hc<T>>;
 type DeepNonNullable<T> = {
     [K in keyof T]: DeepNonNullable<NonNullable<T[K]>>;
 };
+type ClientOptions = {
+    key?: Key;
+    getToken?: GetToken;
+    orgId?: string;
+    spaceId?: string;
+    environmentId?: string;
+};
+declare const AUTH_URL: any;
 declare class APIClient<T extends HonoApp> {
     protected apiEndpoint: string;
     protected honoClient: HonoClient<T>;
@@ -17,18 +25,12 @@ declare class APIClient<T extends HonoApp> {
     protected orgId?: string;
     protected spaceId?: string;
     protected environmentId?: string;
-    constructor({ key, getToken, orgId, spaceId, environmentId, }: {
-        key?: Key;
-        getToken?: GetToken;
-        orgId?: string;
-        spaceId?: string;
-        environmentId?: string;
-    });
+    constructor(options?: ClientOptions);
     request<P extends {
         orgId?: string;
         spaceId?: string;
         environmentId?: string;
-    }, Fn extends (client: HonoClient<T>, validOSEParams: DeepNonNullable<P>) => any>(fn: Fn, oseParams?: P): Promise<ReturnType<Awaited<ReturnType<Fn>>["json"]> | null>;
+    }, Fn extends (client: HonoClient<T>, validOSEParams: DeepNonNullable<P>) => any>(name: string, fn: Fn, oseParams?: P): Promise<ReturnType<Awaited<ReturnType<Fn>>["json"]> | null>;
 }
 declare class StudioClient extends APIClient<StudioAppType> {
     getUser(): Promise<{
@@ -270,11 +272,31 @@ declare class StudioClient extends APIClient<StudioAppType> {
     }): Promise<{
         success: boolean;
     } | null>;
-    createContent({ orgId, spaceId, environmentId, displayName, contentId, }: {
+    createContent({ orgId, spaceId, environmentId, displayName, contentId, previewLayout, }: {
         orgId?: string;
         spaceId?: string;
         environmentId?: string;
         displayName: string;
+        contentId: string;
+        previewLayout: string;
+    }): Promise<{
+        content: {
+            orgId: string;
+            spaceId: string;
+            environmentId: string;
+            displayName: string;
+            createdAt: string;
+            updatedAt?: string | undefined;
+            contentId: string;
+            componentOrder: string[];
+            previewLayout?: string | undefined;
+            published?: boolean | undefined;
+        };
+    } | null>;
+    getContentById({ orgId, spaceId, environmentId, contentId, }: {
+        orgId?: string;
+        spaceId?: string;
+        environmentId?: string;
         contentId: string;
     }): Promise<{
         content: {
@@ -286,7 +308,26 @@ declare class StudioClient extends APIClient<StudioAppType> {
             updatedAt?: string | undefined;
             contentId: string;
             componentOrder: string[];
+            previewLayout?: string | undefined;
             published?: boolean | undefined;
+        };
+    } | null>;
+    getPublishedContentById({ orgId, spaceId, environmentId, contentId, }: {
+        orgId?: string;
+        spaceId?: string;
+        environmentId?: string;
+        contentId: string;
+    }): Promise<{
+        content: {
+            orgId: string;
+            spaceId: string;
+            environmentId: string;
+            displayName: string;
+            createdAt: string;
+            updatedAt?: string | undefined;
+            contentId: string;
+            componentOrder: string[];
+            version: string;
         };
     } | null>;
     getContentByPrefix({ orgId, spaceId, environmentId, prefix, }: {
@@ -314,6 +355,7 @@ declare class StudioClient extends APIClient<StudioAppType> {
             updatedAt?: string | undefined;
             contentId: string;
             componentOrder: string[];
+            previewLayout?: string | undefined;
             published?: boolean | undefined;
         }[];
     } | null>;
@@ -333,6 +375,27 @@ declare class StudioClient extends APIClient<StudioAppType> {
             updatedAt?: string | undefined;
             contentId?: string | undefined;
             componentOrder?: string[] | undefined;
+            previewLayout?: string | undefined;
+            published?: boolean | undefined;
+        };
+    } | null>;
+    updatePreviewLayout({ orgId, spaceId, environmentId, contentId, previewLayout, }: {
+        orgId?: string;
+        spaceId?: string;
+        environmentId?: string;
+        contentId: string;
+        previewLayout: string;
+    }): Promise<{
+        content: {
+            orgId?: string | undefined;
+            spaceId?: string | undefined;
+            environmentId?: string | undefined;
+            displayName?: string | undefined;
+            createdAt?: string | undefined;
+            updatedAt?: string | undefined;
+            contentId?: string | undefined;
+            componentOrder?: string[] | undefined;
+            previewLayout?: string | undefined;
             published?: boolean | undefined;
         };
     } | null>;
@@ -353,6 +416,33 @@ declare class StudioClient extends APIClient<StudioAppType> {
             componentOrder: string[];
             version: string;
         };
+    } | null>;
+    removeContent({ orgId, spaceId, environmentId, contentId, }: {
+        orgId?: string;
+        spaceId?: string;
+        environmentId?: string;
+        contentId: string;
+    }): Promise<{
+        content: {
+            orgId?: string | undefined;
+            spaceId?: string | undefined;
+            environmentId?: string | undefined;
+            displayName?: string | undefined;
+            createdAt?: string | undefined;
+            updatedAt?: string | undefined;
+            contentId?: string | undefined;
+            componentOrder?: string[] | undefined;
+            previewLayout?: string | undefined;
+            published?: boolean | undefined;
+        };
+    } | null>;
+    batchRemoveContent({ orgId, spaceId, environmentId, contentIds, }: {
+        orgId?: string;
+        spaceId?: string;
+        environmentId?: string;
+        contentIds: string[];
+    }): Promise<{
+        success: boolean;
     } | null>;
     createComponent({ orgId, spaceId, environmentId, contentId, type, displayName, controls, position, }: {
         orgId?: string;
@@ -387,6 +477,7 @@ declare class StudioClient extends APIClient<StudioAppType> {
             updatedAt?: string | undefined;
             contentId?: string | undefined;
             componentOrder?: string[] | undefined;
+            previewLayout?: string | undefined;
             published?: boolean | undefined;
         };
     } | null>;
@@ -435,13 +526,12 @@ declare class StudioClient extends APIClient<StudioAppType> {
             } | undefined;
         };
     } | null>;
-    removeComponent({ orgId, spaceId, environmentId, contentId, componentId, componentOrder, }: {
+    removeComponent({ orgId, spaceId, environmentId, contentId, componentId, }: {
         orgId?: string;
         spaceId?: string;
         environmentId?: string;
         contentId: string;
         componentId: string;
-        componentOrder: string[];
     }): Promise<{
         content: {
             orgId?: string | undefined;
@@ -452,6 +542,7 @@ declare class StudioClient extends APIClient<StudioAppType> {
             updatedAt?: string | undefined;
             contentId?: string | undefined;
             componentOrder?: string[] | undefined;
+            previewLayout?: string | undefined;
             published?: boolean | undefined;
         };
     } | null>;
@@ -469,12 +560,43 @@ declare class ResourceClient extends APIClient<ResourcesAppType> {
             updatedAt?: string | undefined;
             contentId: string;
             componentOrder: string[];
+            previewLayout?: string | undefined;
             published?: boolean | undefined;
         }[];
     } | null>;
-    getComponentsByContentId({ contentId, published, }: {
+    getContentById({ contentId }: {
+        contentId: boolean;
+    }): Promise<{
+        content: {
+            orgId: string;
+            spaceId: string;
+            environmentId: string;
+            displayName: string;
+            createdAt: string;
+            updatedAt?: string | undefined;
+            contentId: string;
+            componentOrder: string[];
+            previewLayout?: string | undefined;
+            published?: boolean | undefined;
+        };
+    } | null>;
+    getPublishedContentById({ contentId }: {
+        contentId: boolean;
+    }): Promise<{
+        content: {
+            orgId: string;
+            spaceId: string;
+            environmentId: string;
+            displayName: string;
+            createdAt: string;
+            updatedAt?: string | undefined;
+            contentId: string;
+            componentOrder: string[];
+            version: string;
+        };
+    } | null>;
+    getComponentsByContentId({ contentId }: {
         contentId: string;
-        published?: boolean;
     }): Promise<{
         components: {
             orgId: string;
@@ -491,6 +613,25 @@ declare class ResourceClient extends APIClient<ResourcesAppType> {
             };
         }[];
     } | null>;
+    getPublishedComponentsByContentId({ contentId, }: {
+        contentId: string;
+    }): Promise<{
+        components: {
+            orgId: string;
+            spaceId: string;
+            environmentId: string;
+            displayName: string;
+            createdAt: string;
+            updatedAt?: string | undefined;
+            type: string;
+            contentId: string;
+            version: string;
+            componentId: string;
+            controls: {
+                [x: string]: any;
+            };
+        }[];
+    } | null>;
 }
 
-export { ResourceClient, StudioClient };
+export { AUTH_URL, ResourceClient, StudioClient };
